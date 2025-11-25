@@ -1,88 +1,8 @@
 import gleam/list
-import gleam/option
-import lustre
-import lustre/effect.{type Effect}
-import lustre/element.{type Element}
-import lustre/element/html
-
-pub type State {
-  MadeWithGleamScreen
-  TitleScreen
-  IntroScreen
-  PlayingScreen(game: Game)
-  VictoryScreen
-  CreditsScreen
-}
+import gleam/option.{None}
 
 pub type Game {
   Game(level: Level, next_levels: List(Level))
-}
-
-pub type Message {
-  ContinuePressed
-  WordSelected(word: String)
-  WordRemoved(word: String)
-}
-
-fn update(state: State, message: Message) -> #(State, Effect(Message)) {
-  case state {
-    // These stages move on to the next one when the player does any
-    // interaction
-    MadeWithGleamScreen -> pure(TitleScreen)
-    TitleScreen -> pure(IntroScreen)
-    IntroScreen -> pure(PlayingScreen(Game(level: level_01, next_levels: [])))
-    VictoryScreen -> pure(CreditsScreen)
-    CreditsScreen -> pure(state)
-
-    PlayingScreen(game:) -> update_playing_level(game, message)
-  }
-}
-
-fn update_playing_level(
-  game: Game,
-  message: Message,
-) -> #(State, Effect(Message)) {
-  case message {
-    ContinuePressed ->
-      case answer_is_correct(game.level) {
-        True ->
-          case game.next_levels {
-            [] -> pure(VictoryScreen)
-            [level, ..next_levels] -> {
-              let game = Game(level:, next_levels:)
-              pure(PlayingScreen(game))
-            }
-          }
-        // TODO: indicate to the user that the answer is incorrect
-        False -> pure(PlayingScreen(game))
-      }
-
-    WordSelected(word:) -> {
-      let game = Game(..game, level: select_word(game.level, word))
-      pure(PlayingScreen(game))
-    }
-
-    WordRemoved(word:) -> {
-      let game = Game(..game, level: remove_word(game.level, word))
-      pure(PlayingScreen(game))
-    }
-  }
-}
-
-fn pure(value: value) -> #(value, Effect(message)) {
-  #(value, effect.none())
-}
-
-pub fn application() -> lustre.App(a, State, Message) {
-  lustre.application(init, update, view)
-}
-
-fn view(state: State) -> Element(Message) {
-  html.h1([], [html.text("Hello, Joe!")])
-}
-
-fn init(_: anything) -> #(State, Effect(Message)) {
-  #(MadeWithGleamScreen, effect.none())
 }
 
 pub type Level {
@@ -103,15 +23,64 @@ pub type Chunk {
   InputChunk(correct: String, selection: option.Option(String))
 }
 
-pub const level_01 = Level(
-  disguise_image: "green-hat",
-  sentence: [
-    FixedChunk("Lucy is wearing a "),
-    InputChunk("green", option.None),
-    FixedChunk("."),
+pub const first_level = Level(
+  "green-hat",
+  [
+    FixedChunk("Tá "),
+    InputChunk("hata", None),
+    FixedChunk(" ar Lucy."),
   ],
-  words: ["blue", "green", "orange", "red"],
+  ["hata", "spéiclí"],
 )
+
+// t-léine
+// gúna
+// briste
+// carbhat
+// hata
+// spéiclí
+
+pub const levels = [
+  Level(
+    "red-dress",
+    [
+      FixedChunk("Tá "),
+      InputChunk("gúna", None),
+      FixedChunk(" ar Lucy."),
+    ],
+    ["gúna", "spéiclí"],
+  ),
+  Level(
+    "green-tshirt",
+    [
+      FixedChunk("Tá "),
+      InputChunk("t-léine", None),
+      FixedChunk(" uirthi."),
+    ],
+    ["hata", "t-léine"],
+  ),
+  Level(
+    "blue-hat",
+    [
+      FixedChunk("Tá hata "),
+      InputChunk("uirthi", None),
+      FixedChunk("."),
+    ],
+    ["ar", "air", "uirthi"],
+  ),
+  Level(
+    "green-tshirt",
+    [
+      InputChunk("Tá", None),
+      FixedChunk(" t-léine uirthi."),
+    ],
+    ["Is", "Tá"],
+  ),
+]
+
+pub fn new() -> Game {
+  Game(level: first_level, next_levels: levels)
+}
 
 pub fn select_word(level: Level, word: String) -> Level {
   let sentence =
