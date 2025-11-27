@@ -99,8 +99,8 @@ fn view(state: State) -> Element(Message) {
 }
 
 fn init(_: anything) -> #(State, Effect(Message)) {
-  // #(MadeWithGleamScreen, effect.none())
+  #(MadeWithGleamScreen, effect.none())
   // #(TitleScreen, effect.none())
   // #(ChallengeScreen(game.new()), effect.none())
-  #(CreditsScreen, effect.none())
+  // #(CreditsScreen, effect.none())
 }
