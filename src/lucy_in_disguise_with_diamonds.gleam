@@ -5,8 +5,8 @@ import lustre/effect.{type Effect}
 import lustre/element.{type Element}
 
 pub type State {
-  MadeWithGleamScreen
   TitleScreen
+  MadeWithGleamScreen
   IntroScreen
   ChallengeScreen(game: Game)
   AnswerScreen(game: Game)
@@ -30,8 +30,8 @@ fn update(state: State, message: Message) -> #(State, Effect(Message)) {
   case state {
     // These stages move on to the next one when the player does any
     // interaction
-    MadeWithGleamScreen -> pure(TitleScreen)
-    TitleScreen -> pure(IntroScreen)
+    TitleScreen -> pure(MadeWithGleamScreen)
+    MadeWithGleamScreen -> pure(IntroScreen)
     IntroScreen -> pure(ChallengeScreen(game.new()))
     VictoryScreen -> pure(CreditsScreen)
     CreditsScreen -> pure(state)
@@ -99,8 +99,7 @@ fn view(state: State) -> Element(Message) {
 }
 
 fn init(_: anything) -> #(State, Effect(Message)) {
-  #(MadeWithGleamScreen, effect.none())
-  // #(TitleScreen, effect.none())
+  #(TitleScreen, effect.none())
   // #(ChallengeScreen(game.new()), effect.none())
   // #(CreditsScreen, effect.none())
 }

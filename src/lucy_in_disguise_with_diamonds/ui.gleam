@@ -43,7 +43,7 @@ pub fn challenge_screen(
     on_word_removed: Some(remove_word),
     images: [
       "https://gleam.run/images/lucy/lucy.svg",
-      "https://gleam.run/images/lucy/lucy.svg",
+      "item-" <> game.level.disguise_image <> ".svg",
     ],
   )
 }
@@ -52,6 +52,11 @@ pub fn answer_screen(
   game game: Game,
   on_continue continue: message,
 ) -> Element(message) {
+  let success = game.answer_is_correct(game.level)
+  let prefix = case success {
+    True -> "success"
+    False -> "fail"
+  }
   level_screen(
     game,
     continue_text: "Next level",
@@ -59,7 +64,7 @@ pub fn answer_screen(
     on_word_selected: None,
     on_word_removed: None,
     images: [
-      "https://gleam.run/images/lucy/lucy.svg",
+      prefix <> "-" <> game.level.disguise_image <> ".svg",
     ],
   )
 }
@@ -172,8 +177,9 @@ pub fn credits_screen() -> Element(message) {
 
       html.h2([], [element.text("Production")]),
       credits_section([
-        #("Graphics", ["Happy Fiala"]),
+        #("Graphics", ["Hap Fiala"]),
         #("Programming", ["Louis Pilfold"]),
+        #("Purring", ["Nubi"]),
       ]),
 
       html.h2([], [element.text("Resources")]),

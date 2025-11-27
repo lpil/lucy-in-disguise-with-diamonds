@@ -24,13 +24,13 @@ pub type Chunk {
 }
 
 pub const first_level = Level(
-  "green-hat",
+  "t-shirt",
   [
     FixedChunk("Tá "),
-    InputChunk("hata", None),
+    InputChunk("t-léine", None),
     FixedChunk(" ar Lucy."),
   ],
-  ["hata", "spéiclí"],
+  ["hata", "t-léine"],
 )
 
 // t-léine
@@ -42,40 +42,79 @@ pub const first_level = Level(
 
 pub const levels = [
   Level(
-    "red-dress",
+    "hat",
+    [
+      FixedChunk("Tá "),
+      InputChunk("hata", None),
+      FixedChunk(" uirthi."),
+    ],
+    ["gúna", "hata", "t-léine"],
+  ),
+  Level(
+    "dress",
     [
       FixedChunk("Tá "),
       InputChunk("gúna", None),
-      FixedChunk(" ar Lucy."),
-    ],
-    ["gúna", "spéiclí"],
-  ),
-  Level(
-    "green-tshirt",
-    [
-      FixedChunk("Tá "),
-      InputChunk("t-léine", None),
       FixedChunk(" uirthi."),
     ],
-    ["hata", "t-léine"],
+    ["gúna", "hata", "t-léine"],
   ),
-  Level(
-    "blue-hat",
-    [
-      FixedChunk("Tá hata "),
-      InputChunk("uirthi", None),
-      FixedChunk("."),
-    ],
-    ["ar", "air", "uirthi"],
-  ),
-  Level(
-    "green-tshirt",
-    [
-      InputChunk("Tá", None),
-      FixedChunk(" t-léine uirthi."),
-    ],
-    ["Is", "Tá"],
-  ),
+  // Level(
+//   "glasses",
+//   [
+//     InputChunk("Tá", None),
+//     FixedChunk(" t-léine uirthi."),
+//   ],
+//   ["Is", "Tá"],
+// ),
+// Level(
+//   "scarf",
+//   [
+//     InputChunk("Tá", None),
+//     FixedChunk(" t-léine uirthi."),
+//   ],
+//   ["Is", "Tá"],
+// ),
+// // Level(
+// //   "bag",
+// //   [
+// //     InputChunk("Tá", None),
+// //     FixedChunk(" t-léine uirthi."),
+// //   ],
+// //   ["Is", "Tá"],
+// // ),
+// Level(
+//   "trousers",
+//   [
+//     InputChunk("Tá", None),
+//     FixedChunk(" t-léine uirthi."),
+//   ],
+//   ["Is", "Tá"],
+// ),
+// Level(
+//   "wig",
+//   [
+//     InputChunk("Tá", None),
+//     FixedChunk(" t-léine uirthi."),
+//   ],
+//   ["Is", "Tá"],
+// ),
+// Level(
+//   "coat",
+//   [
+//     InputChunk("Tá", None),
+//     FixedChunk(" t-léine uirthi."),
+//   ],
+//   ["Is", "Tá"],
+// ),
+// Level(
+//   "tie",
+//   [
+//     InputChunk("Tá", None),
+//     FixedChunk(" t-léine uirthi."),
+//   ],
+//   ["Is", "Tá"],
+// ),
 ]
 
 pub fn new() -> Game {
