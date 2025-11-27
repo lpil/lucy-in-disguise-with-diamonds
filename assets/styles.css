@@ -1,0 +1,152 @@
+@font-face {
+  font-family: "Outfit";
+  font-stretch: 25% 150%;
+  font-style: normal;
+  font-weight: 100 900;
+  src: url(Outfit.ttf) format('truetype');
+}
+
+:root {
+  --faff: #ffaff3;
+  --code-melon: #ffd596;
+  --cream: #fffbe8;
+}
+
+body {
+  font-family: "Outfit", sans-serif;
+  background-color: var(--cream);
+  margin: 0;
+  font-size: 18px;
+}
+
+#app {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.title-screen {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.title-screen h1 {
+  font-size: 32px;
+  font-weight: bold;
+}
+
+.title-screen img {
+  height: 200px;
+  margin: 2rem;
+}
+
+.game {
+  padding: 30px;
+  width: 90vw;
+  max-width: 750px;
+  min-height: 460px;
+  background-color: var(--cream);
+  border-radius: 50px;
+  border: 6px solid var(--faff);
+  box-shadow: 10px 10px 35px 0px rgba(0,0,0,0.33);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: column;
+}
+
+.game .status {
+  display: flex;
+  justify-content: space-between;
+  align-self: stretch;
+}
+
+.game .hearts {
+  display: flex;
+  height: 40px;
+}
+
+.game .diamonds {
+  display: flex;
+  height: 33px;
+  align-items: center;
+  border-radius: 25px;
+  border: 1px solid #584355;
+  background: rgba(195, 193, 185, 0.50);
+  padding: 0 8px;
+  gap: 5px;
+}
+
+.game .diamonds img {
+  height: 25px;
+}
+
+.game-background {
+  height: 100vh;
+  width: 100vw;
+  background-color: var(--code-melon);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.word-placeholder {
+  display: inline-block;
+  position: relative;
+  top: 2px;
+  border-bottom: 3px dashed black;
+  margin: 0 4px;
+}
+
+.word-selected,
+.word-placeholder {
+  min-width: 65px;
+}
+
+.images {
+  align-self: stretch;
+  display: flex;
+  justify-content: center;
+  margin: 2rem;
+}
+
+.images img {
+  height: 150px;
+}
+
+.fixed-chunk {
+  font-size: 24px;
+}
+
+button {
+  background: none;
+  border: none;
+  outline: none;
+  box-shadow: none;
+  cursor: pointer;
+  padding: 0 8px;
+
+  border-radius: 10px;
+  border: 2px solid rgba(88, 67, 85, 0.50);
+  background: #F0EEFF;
+  box-shadow: 0 2px 2px 0 rgba(88, 67, 85, 0.20);
+}
+
+ul {
+  padding: 0;
+  list-style: none;
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin: 1rem 0;
+}
+
+li {
+  display: inline-block;
+}

@@ -93,5 +93,6 @@ fn view(state: State) -> Element(Message) {
 
 fn init(_: anything) -> #(State, Effect(Message)) {
   // #(MadeWithGleamScreen, effect.none())
+  // #(TitleScreen, effect.none())
   #(PlayingScreen(game.new()), effect.none())
 }

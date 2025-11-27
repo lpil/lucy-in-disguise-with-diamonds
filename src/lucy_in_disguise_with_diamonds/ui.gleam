@@ -13,13 +13,18 @@ pub fn made_with_gleam_screen(continue: message) -> Element(message) {
 }
 
 pub fn title_screen(continue: message) -> Element(message) {
-  html.div([event.on_click(continue)], [
+  html.div([attribute.class("title-screen")], [
     html.h1([], [element.text("Lucy in Disguise with Diamonds")]),
+    html.img([
+      attribute.class("undisguised-lucy"),
+      attribute.src("https://gleam.run/images/lucy/lucy.svg"),
+    ]),
+    button(continue, [], [element.text("Play")]),
   ])
 }
 
 pub fn intro_screen(continue: message) -> Element(message) {
-  html.div([event.on_click(continue)], [
+  html.main([event.on_click(continue)], [
     html.h1([], [element.text("Intro text explaining the game here")]),
   ])
 }
@@ -31,14 +36,36 @@ pub fn playing_screen(
   on_word_removed remove_word: fn(String) -> message,
 ) -> Element(message) {
   let level = game.level
-  html.div([], [
-    html.img([
-      attribute.src("https://gleam.run/images/lucy/lucy.svg"),
-      attribute.height(100),
+  html.div([attribute.class("game-background")], [
+    html.main([attribute.class("game")], [
+      html.div([attribute.class("status")], [
+        html.div([attribute.class("hearts")], [
+          html.img([attribute.src("https://gleam.run/images/lucy/lucy.svg")]),
+          html.img([attribute.src("https://gleam.run/images/lucy/lucy.svg")]),
+          html.img([attribute.src("https://gleam.run/images/lucy/lucy.svg")]),
+        ]),
+        html.div([attribute.class("diamonds")], [
+          element.text("0"),
+          html.img([attribute.src("https://gleam.run/images/lucy/lucy.svg")]),
+        ]),
+      ]),
+      html.div([attribute.class("images")], [
+        html.img([
+          attribute.class("undisguised-lucy"),
+          attribute.src("https://gleam.run/images/lucy/lucy.svg"),
+        ]),
+        html.img([
+          attribute.class("clothing"),
+          attribute.src("https://gleam.run/images/lucy/lucy.svg"),
+        ]),
+      ]),
+      html.p(
+        [attribute.class("sentence")],
+        list.map(level.sentence, sentence_chunk_view(_, remove_word)),
+      ),
+      html.ul([], list.map(level.words, possible_word_view(_, select_word))),
+      button(continue, [], [element.text("Go")]),
     ]),
-    html.p([], list.map(level.sentence, sentence_chunk_view(_, remove_word))),
-    html.ul([], list.map(level.words, possible_word_view(_, select_word))),
-    button(continue, [], [element.text("Go")]),
   ])
 }
 
@@ -47,10 +74,14 @@ fn sentence_chunk_view(
   remove_word: fn(String) -> message,
 ) -> Element(message) {
   case chunk {
-    game.FixedChunk(text:) -> html.text(text)
-    game.InputChunk(selection: option.None, ..) -> html.text("_____")
+    game.FixedChunk(text:) ->
+      html.span([attribute.class("fixed-chunk")], [element.text(text)])
+    game.InputChunk(selection: option.None, ..) ->
+      html.span([attribute.class("word-placeholder")], [])
     game.InputChunk(selection: option.Some(word), ..) ->
-      button(remove_word(word), [], [html.text(word)])
+      button(remove_word(word), [attribute.class("word-selected")], [
+        html.text(word),
+      ])
   }
 }
 
