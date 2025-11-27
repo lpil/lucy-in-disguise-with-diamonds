@@ -8,7 +8,8 @@ pub type State {
   MadeWithGleamScreen
   TitleScreen
   IntroScreen
-  PlayingScreen(game: Game)
+  ChallengeScreen(game: Game)
+  AnswerScreen(game: Game)
   VictoryScreen
   CreditsScreen
 }
@@ -31,41 +32,45 @@ fn update(state: State, message: Message) -> #(State, Effect(Message)) {
     // interaction
     MadeWithGleamScreen -> pure(TitleScreen)
     TitleScreen -> pure(IntroScreen)
-    IntroScreen -> pure(PlayingScreen(game.new()))
+    IntroScreen -> pure(ChallengeScreen(game.new()))
     VictoryScreen -> pure(CreditsScreen)
     CreditsScreen -> pure(state)
 
-    PlayingScreen(game:) -> update_playing_level(game, message)
+    ChallengeScreen(game:) -> update_challenge_screen(game, message)
+    AnswerScreen(game:) -> update_answer_screen(game, message)
   }
 }
 
-fn update_playing_level(
+fn update_answer_screen(game: Game, message: Message) -> #(State, Effect(a)) {
+  case message {
+    WordRemoved(..) | WordSelected(..) -> pure(AnswerScreen(game))
+
+    ContinuePressed ->
+      case game.next_levels {
+        [] -> pure(VictoryScreen)
+        [level, ..next_levels] -> {
+          let game = Game(level:, next_levels:)
+          pure(ChallengeScreen(game))
+        }
+      }
+  }
+}
+
+fn update_challenge_screen(
   game: Game,
   message: Message,
 ) -> #(State, Effect(Message)) {
   case message {
-    ContinuePressed ->
-      case game.answer_is_correct(game.level) {
-        True ->
-          case game.next_levels {
-            [] -> pure(VictoryScreen)
-            [level, ..next_levels] -> {
-              let game = Game(level:, next_levels:)
-              pure(PlayingScreen(game))
-            }
-          }
-        // TODO: indicate to the user that the answer is incorrect
-        False -> pure(PlayingScreen(game))
-      }
+    ContinuePressed -> pure(AnswerScreen(game))
 
     WordSelected(word:) -> {
       let game = Game(..game, level: game.select_word(game.level, word))
-      pure(PlayingScreen(game))
+      pure(ChallengeScreen(game))
     }
 
     WordRemoved(word:) -> {
       let game = Game(..game, level: game.remove_word(game.level, word))
-      pure(PlayingScreen(game))
+      pure(ChallengeScreen(game))
     }
   }
 }
@@ -79,20 +84,22 @@ fn view(state: State) -> Element(Message) {
     MadeWithGleamScreen -> ui.made_with_gleam_screen(ContinuePressed)
     TitleScreen -> ui.title_screen(ContinuePressed)
     IntroScreen -> ui.intro_screen(ContinuePressed)
-    PlayingScreen(game:) ->
-      ui.playing_screen(
+    ChallengeScreen(game:) ->
+      ui.challenge_screen(
         game:,
         on_continue: ContinuePressed,
         on_word_selected: WordSelected,
         on_word_removed: WordRemoved,
       )
+    AnswerScreen(game:) -> ui.answer_screen(game:, on_continue: ContinuePressed)
+
     VictoryScreen -> ui.victory_screen(ContinuePressed)
     CreditsScreen -> ui.credits_screen()
   }
 }
 
 fn init(_: anything) -> #(State, Effect(Message)) {
-  // #(MadeWithGleamScreen, effect.none())
+  #(MadeWithGleamScreen, effect.none())
   // #(TitleScreen, effect.none())
-  #(PlayingScreen(game.new()), effect.none())
+  // #(ChallengeScreen(game.new()), effect.none())
 }

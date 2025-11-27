@@ -109,6 +109,10 @@ body {
   margin: 0 4px;
 }
 
+.sentence button:disabled {
+  cursor: unset;
+}
+
 .images {
   align-self: stretch;
   display: flex;
@@ -131,11 +135,16 @@ button {
   box-shadow: none;
   cursor: pointer;
   padding: 0 8px;
+  white-space: nowrap;
 
   border-radius: 10px;
   border: 2px solid rgba(88, 67, 85, 0.50);
   background: #F0EEFF;
   box-shadow: 0 2px 2px 0 rgba(88, 67, 85, 0.20);
+}
+
+button:disabled {
+  cursor: unset;
 }
 
 ul {
