@@ -97,16 +97,16 @@ body {
 }
 
 .word-placeholder {
-  display: inline-block;
   position: relative;
   top: 2px;
   border-bottom: 3px dashed black;
-  margin: 0 4px;
 }
 
 .word-selected,
 .word-placeholder {
-  min-width: 65px;
+  display: inline-block;
+  width: 70px;
+  margin: 0 4px;
 }
 
 .images {
