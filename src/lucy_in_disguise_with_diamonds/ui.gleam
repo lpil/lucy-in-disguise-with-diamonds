@@ -161,7 +161,51 @@ pub fn victory_screen(continue: message) -> Element(message) {
 }
 
 pub fn credits_screen() -> Element(message) {
-  html.div([], [
-    html.h1([], [element.text("Credits screen")]),
+  html.div([attribute.class("credits-background")], [
+    html.div([attribute.class("credits")], [
+      html.h1([], [element.text("Lucy in Disguise with Diamonds")]),
+
+      html.h2([], [element.text("Cast")]),
+      credits_section([
+        #("Lucy", ["Herself"]),
+      ]),
+
+      html.h2([], [element.text("Production")]),
+      credits_section([
+        #("Graphics", ["Happy Fiala"]),
+        #("Programming", ["Louis Pilfold"]),
+      ]),
+
+      html.h2([], [element.text("Resources")]),
+      credits_section([
+        #("Lustre framework", ["Hayleigh Thompson", "Yoshie Reusch"]),
+        #("Gleam language", ["The Gleam core team", "The Gleam contributors"]),
+        #("Outfit font", ["Smartsheet Inc", "Rodrigo Fuenzalida"]),
+      ]),
+
+      html.p([attribute.class("disclaimer")], [
+        html.text(
+          "The characters and events depicted in this game are fictitious. "
+          <> "Any similarity to actual persons, living or dead, is purely "
+          <> "coincidental.",
+        ),
+        html.br([]),
+        html.text("Lucy has never even been to Paris."),
+      ]),
+    ]),
   ])
+}
+
+fn credits_section(credits: List(#(String, List(String)))) -> Element(message) {
+  element.fragment(
+    list.map(credits, fn(credit) {
+      html.div([attribute.class("credit")], [
+        html.div([attribute.class("credit-role")], [html.text(credit.0)]),
+        html.ul(
+          [],
+          list.map(credit.1, fn(name) { html.li([], [element.text(name)]) }),
+        ),
+      ])
+    }),
+  )
 }
