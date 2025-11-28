@@ -8,6 +8,7 @@ pub type Game {
     next_levels: List(Level),
     selected: Option(Item),
     score: Int,
+    lives: Int,
   )
 }
 
@@ -36,7 +37,13 @@ pub const levels = [
 ]
 
 pub fn new() -> Game {
-  Game(level: first_level, next_levels: levels, selected: None, score: 0)
+  Game(
+    level: first_level,
+    next_levels: levels,
+    selected: None,
+    score: 0,
+    lives: 3,
+  )
 }
 
 pub fn select_option(game: Game, option: Item) -> Game {
@@ -149,4 +156,8 @@ pub fn all_images() -> List(String) {
 
 pub fn increment_score(game: Game) -> Game {
   Game(..game, score: game.score + 1)
+}
+
+pub fn decrement_lives(game: Game) -> Game {
+  Game(..game, lives: game.lives - 1)
 }

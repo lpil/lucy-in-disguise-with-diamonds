@@ -90,6 +90,28 @@ body {
   margin: 0 2px;
 }
 
+.game .hearts img.empty {
+  animation: heart-shake 0.2s linear forwards 0s 3;
+}
+
+@keyframes heart-shake {
+  0% {
+    transform: translateX(0px);
+  }
+  20% {
+    transform: translateX(4px);
+  }
+  40% {
+    transform: translateX(0px);
+  }
+  80% {
+    transform: translateX(4px);
+  }
+  100% {
+    transform: translateX(0px);
+  }
+}
+
 .game .diamonds {
   display: flex;
   height: 33px;

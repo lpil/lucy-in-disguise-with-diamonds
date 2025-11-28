@@ -135,13 +135,6 @@ fn level_screen(
   let level = game.level
   let score = int.to_string(game.score)
 
-  let lives_indicator =
-    html.div([attribute.class("hearts")], [
-      html.img([attribute.src("heart-full.svg")]),
-      html.img([attribute.src("heart-full.svg")]),
-      html.img([attribute.src("heart-full.svg")]),
-    ])
-
   let diamond =
     html.img([
       attribute.src("diamond.svg"),
@@ -156,7 +149,10 @@ fn level_screen(
     ])
 
   card([attribute.class("game")], [
-    html.div([attribute.class("status")], [lives_indicator, score_indicator]),
+    html.div([attribute.class("status")], [
+      lives_indicator(game),
+      score_indicator,
+    ]),
     html.div(
       [attribute.class("images")],
       list.map(images, fn(image) { html.img([attribute.src(image)]) }),
@@ -171,6 +167,19 @@ fn level_screen(
       None -> disabled_button([], [element.text(continue_text)])
     },
   ])
+}
+
+fn lives_indicator(game: Game) -> Element(message) {
+  let full = html.img([attribute.src("heart-full.svg")])
+  let empty =
+    html.img([attribute.src("heart-empty.svg"), attribute.class("empty")])
+  let hearts = case game.lives {
+    3 -> [full, full, full]
+    2 -> [full, full, empty]
+    1 -> [full, empty, empty]
+    _ -> [empty, empty, empty]
+  }
+  html.div([attribute.class("hearts")], hearts)
 }
 
 fn card(

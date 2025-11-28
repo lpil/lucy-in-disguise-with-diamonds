@@ -90,17 +90,17 @@ fn update_challenge_screen(
 
     ContinuePressed ->
       case game.selected {
-        option.Some(selected) -> {
-          let success = selected == game.level.item
-          let effect = case success {
-            True ->
-              effect.batch([
-                audio.play_success(),
-                stepped_dispatch(10, ScoreIncrementSignalled),
-              ])
-            False -> effect.none()
-          }
+        option.Some(selected) if selected == game.level.item -> {
+          let effect =
+            effect.batch([
+              audio.play_success(),
+              stepped_dispatch(10, ScoreIncrementSignalled),
+            ])
           #(AnswerScreen(game, selected), effect)
+        }
+        option.Some(selected) -> {
+          let game = game.decrement_lives(game)
+          #(AnswerScreen(game, selected), effect.none())
         }
         option.None -> pure(ChallengeScreen(game))
       }
