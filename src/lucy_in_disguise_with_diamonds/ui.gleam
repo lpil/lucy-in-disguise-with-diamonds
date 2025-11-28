@@ -1,9 +1,11 @@
+import gleam/int
 import gleam/list
 import gleam/option.{type Option, None, Some}
 import lucy_in_disguise_with_diamonds/game.{type Game}
 import lustre/attribute.{type Attribute}
 import lustre/element.{type Element}
 import lustre/element/html
+import lustre/element/keyed
 import lustre/event
 
 pub fn gleam_logo_screen(continue: message) -> Element(message) {
@@ -131,18 +133,30 @@ fn level_screen(
   images images: List(String),
 ) -> Element(message) {
   let level = game.level
+  let score = int.to_string(game.score)
+
+  let lives_indicator =
+    html.div([attribute.class("hearts")], [
+      html.img([attribute.src("heart-full.svg")]),
+      html.img([attribute.src("heart-full.svg")]),
+      html.img([attribute.src("heart-full.svg")]),
+    ])
+
+  let diamond =
+    html.img([
+      attribute.src("diamond.svg"),
+      attribute.classes([#("scored", game.score != 0)]),
+    ])
+  // This is keyed to force it to re-render when the value changes, to replay
+  // the animation.
+  let score_indicator =
+    keyed.div([attribute.class("diamonds")], [
+      #("number", element.text(score)),
+      #(score, diamond),
+    ])
+
   card([attribute.class("game")], [
-    html.div([attribute.class("status")], [
-      html.div([attribute.class("hearts")], [
-        html.img([attribute.src("heart-full.svg")]),
-        html.img([attribute.src("heart-full.svg")]),
-        html.img([attribute.src("heart-full.svg")]),
-      ]),
-      html.div([attribute.class("diamonds")], [
-        element.text("0"),
-        html.img([attribute.src("diamond.svg")]),
-      ]),
-    ]),
+    html.div([attribute.class("status")], [lives_indicator, score_indicator]),
     html.div(
       [attribute.class("images")],
       list.map(images, fn(image) { html.img([attribute.src(image)]) }),

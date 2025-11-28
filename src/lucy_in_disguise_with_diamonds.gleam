@@ -19,6 +19,7 @@ pub type State {
 
 pub type Message {
   ContinuePressed
+  ScoreIncrementSignalled
   WordSelected(game.Item)
   WordRemoved(game.Item)
 }
@@ -61,11 +62,16 @@ fn update_answer_screen(
   case message {
     WordRemoved(..) | WordSelected(..) -> pure(AnswerScreen(game, selected))
 
+    ScoreIncrementSignalled -> #(
+      AnswerScreen(game.increment_score(game), selected),
+      effect.none(),
+    )
+
     ContinuePressed ->
       case game.next_levels {
         [] -> pure(VictoryScreen)
         [level, ..next_levels] -> {
-          let game = Game(level:, next_levels:, selected: option.None)
+          let game = Game(..game, level:, next_levels:, selected: option.None)
           pure(ChallengeScreen(game))
         }
       }
@@ -77,11 +83,21 @@ fn update_challenge_screen(
   message: Message,
 ) -> #(State, Effect(Message)) {
   case message {
+    ScoreIncrementSignalled -> #(
+      ChallengeScreen(game.increment_score(game)),
+      effect.none(),
+    )
+
     ContinuePressed ->
       case game.selected {
         option.Some(selected) -> {
-          let effect = case selected == game.level.item {
-            True -> audio.play_success()
+          let success = selected == game.level.item
+          let effect = case success {
+            True ->
+              effect.batch([
+                audio.play_success(),
+                stepped_dispatch(10, ScoreIncrementSignalled),
+              ])
             False -> effect.none()
           }
           #(AnswerScreen(game, selected), effect)
@@ -97,6 +113,23 @@ fn update_challenge_screen(
     WordRemoved(option) -> {
       let game = game.deselect_option(game, option)
       pure(ChallengeScreen(game))
+    }
+  }
+}
+
+fn stepped_dispatch(amount: Int, message: Message) -> Effect(Message) {
+  use dispatch <- effect.from
+  use <- stepped(amount)
+  dispatch(message)
+}
+
+fn stepped(amount: Int, run: fn() -> anything) -> Nil {
+  case amount > 0 {
+    False -> Nil
+    True -> {
+      use <- time.wait(100)
+      run()
+      stepped(amount - 1, run)
     }
   }
 }

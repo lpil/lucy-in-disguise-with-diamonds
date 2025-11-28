@@ -3,7 +3,12 @@ import gleam/option.{type Option, None, Some}
 import gleam/set
 
 pub type Game {
-  Game(level: Level, next_levels: List(Level), selected: Option(Item))
+  Game(
+    level: Level,
+    next_levels: List(Level),
+    selected: Option(Item),
+    score: Int,
+  )
 }
 
 pub type Level {
@@ -31,7 +36,7 @@ pub const levels = [
 ]
 
 pub fn new() -> Game {
-  Game(level: first_level, next_levels: levels, selected: None)
+  Game(level: first_level, next_levels: levels, selected: None, score: 0)
 }
 
 pub fn select_option(game: Game, option: Item) -> Game {
@@ -140,4 +145,8 @@ pub fn all_images() -> List(String) {
       item_success_image_url(item),
     ]
   })
+}
+
+pub fn increment_score(game: Game) -> Game {
+  Game(..game, score: game.score + 1)
 }

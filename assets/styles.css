@@ -94,15 +94,33 @@ body {
   display: flex;
   height: 33px;
   align-items: center;
+  justify-content: right;
   border-radius: 25px;
   border: 1px solid #584355;
   background: rgba(195, 193, 185, 0.50);
   padding: 0 8px;
   gap: 5px;
+  min-width: 4.5rem;
 }
 
 .game .diamonds img {
   height: 25px;
+}
+
+.game .diamonds .scored {
+  animation: diamond-hop 0.1s ease forwards;
+}
+
+@keyframes diamond-hop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 .word-placeholder {
@@ -327,3 +345,4 @@ ul {
 .intro span {
   color: #c8ffa7;
 }
+
