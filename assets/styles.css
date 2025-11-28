@@ -10,6 +10,7 @@
   --faff: #ffaff3;
   --code-melon: #ffd596;
   --cream: #fffbe8;
+  --black: #292d3e;
 }
 
 body {
@@ -253,7 +254,18 @@ ul {
   }
 }
 
+.logo-screen {
+  background-color: var(--black);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  width: 100vw;
+}
+
 .logo-screen img {
+  width: 500px;
+  max-width: 90vw;
   animation: pulseFade 0.8s ease-in-out;
 }
 
@@ -278,7 +290,7 @@ ul {
 }
 
 .intro article {
-  background-color: #292d3e;
+  background-color: var(--black);
   border-radius: 35px;
   padding: 25px 30px;
   display: flex;

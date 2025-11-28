@@ -1,5 +1,7 @@
 import gleam/option
+import lucy_in_disguise_with_diamonds/audio
 import lucy_in_disguise_with_diamonds/game.{type Game, Game}
+import lucy_in_disguise_with_diamonds/time
 import lucy_in_disguise_with_diamonds/ui
 import lustre
 import lustre/effect.{type Effect}
@@ -31,11 +33,19 @@ fn update(state: State, message: Message) -> #(State, Effect(Message)) {
   case state {
     // These stages move on to the next one when the player does any
     // interaction
-    TitleScreen -> pure(GleamLogoScreen)
-    GleamLogoScreen -> pure(IntroScreen)
     IntroScreen -> pure(ChallengeScreen(game.new()))
     VictoryScreen -> pure(CreditsScreen)
     CreditsScreen -> pure(state)
+
+    GleamLogoScreen -> #(IntroScreen, audio.play_music())
+
+    TitleScreen -> {
+      let effects =
+        effect.batch([
+          time.later(2000, ContinuePressed),
+        ])
+      #(GleamLogoScreen, effects)
+    }
 
     ChallengeScreen(game:) -> update_challenge_screen(game, message)
     AnswerScreen(game:, selected:) ->
@@ -69,7 +79,13 @@ fn update_challenge_screen(
   case message {
     ContinuePressed ->
       case game.selected {
-        option.Some(selected) -> pure(AnswerScreen(game, selected))
+        option.Some(selected) -> {
+          let effect = case selected == game.level.item {
+            True -> audio.play_success()
+            False -> effect.none()
+          }
+          #(AnswerScreen(game, selected), effect)
+        }
         option.None -> pure(ChallengeScreen(game))
       }
 

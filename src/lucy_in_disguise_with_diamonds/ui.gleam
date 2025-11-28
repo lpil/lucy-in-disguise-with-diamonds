@@ -23,6 +23,7 @@ pub fn title_screen(continue: message) -> Element(message) {
       attribute.src("https://gleam.run/images/lucy/lucy.svg"),
     ]),
     button(continue, [], [element.text("Play")]),
+    html.p([], [element.text("Psst. This game has audio!")]),
   ])
 }
 
@@ -88,6 +89,10 @@ pub fn answer_screen(
   selected selected: game.Item,
   on_continue continue: message,
 ) -> Element(message) {
+  let image = case game.level.item == selected {
+    True -> game.item_success_image_url(selected)
+    False -> game.item_fail_image_url(selected)
+  }
   level_screen(
     game,
     continue_text: "Next level",
@@ -95,7 +100,7 @@ pub fn answer_screen(
     on_option_selected: None,
     on_option_removed: None,
     images: [
-      game.item_fail_image_url(selected),
+      image,
     ],
   )
 }
@@ -228,6 +233,7 @@ pub fn credits_screen() -> Element(message) {
         #("Lustre framework", ["Hayleigh Thompson", "Yoshie Reusch"]),
         #("Gleam language", ["The Gleam core team", "The Gleam contributors"]),
         #("Outfit font", ["Smartsheet Inc", "Rodrigo Fuenzalida"]),
+        #("Voice acting", ["Kara via Fourthwoods on Freesound"]),
       ]),
 
       html.p([attribute.class("disclaimer")], [
