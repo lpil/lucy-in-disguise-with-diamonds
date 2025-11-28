@@ -6,9 +6,12 @@ import lustre/element.{type Element}
 import lustre/element/html
 import lustre/event
 
-pub fn made_with_gleam_screen(continue: message) -> Element(message) {
-  html.div([event.on_click(continue)], [
-    html.h1([], [element.text("Made with Gleam!")]),
+pub fn gleam_logo_screen(continue: message) -> Element(message) {
+  html.div([event.on_click(continue), attribute.class("logo-screen")], [
+    html.img([
+      attribute.alt("Gleam in the style of the classic SEGA logo"),
+      attribute.src("logo.svg"),
+    ]),
   ])
 }
 
@@ -24,8 +27,36 @@ pub fn title_screen(continue: message) -> Element(message) {
 }
 
 pub fn intro_screen(continue: message) -> Element(message) {
-  html.main([event.on_click(continue)], [
-    html.h1([], [element.text("Intro text explaining the game here")]),
+  card([event.on_click(continue), attribute.class("intro")], [
+    html.article([], [
+      html.h1([], [
+        element.text(
+          "Lucy’s planning a diamond heist, but she’ll need your help to pull it off.",
+        ),
+      ]),
+      html.p([], [
+        html.text(
+          "The date is set, the security system’s been hacked, and the getaway is planned. But in order to successfully hit the infamous Louvstre Museum, Lucy needs a foolproof disguise—and to not get caught in the run-up.",
+        ),
+      ]),
+      html.p([], [
+        html.text(
+          "Her solution: all heist communications are conducted in Gaeilge.",
+        ),
+      ]),
+      html.p([], [
+        html.text(
+          "Help Lucy by identifying her disguise, and soon she’ll be ready for the heist of the century!",
+        ),
+      ]),
+      html.p([], [
+        html.text("Be Gay. Do Crime... "),
+        html.span([], [html.text("Don’t Get Caught.")]),
+      ]),
+      html.p([attribute.styles([#("text-align", "center")])], [
+        button(continue, [], [element.text("Start the heist")]),
+      ]),
+    ]),
   ])
 }
 
@@ -35,11 +66,15 @@ pub fn challenge_screen(
   on_option_selected select: fn(game.Item) -> message,
   on_option_removed remove: fn(game.Item) -> message,
 ) -> Element(message) {
+  let #(continue, select) = case game.selected {
+    None -> #(None, Some(select))
+    Some(_) -> #(Some(continue), None)
+  }
   level_screen(
     game,
     continue_text: "Check answer",
     on_continue: continue,
-    on_option_selected: Some(select),
+    on_option_selected: select,
     on_option_removed: Some(remove),
     images: [
       "https://gleam.run/images/lucy/lucy.svg",
@@ -56,7 +91,7 @@ pub fn answer_screen(
   level_screen(
     game,
     continue_text: "Next level",
-    on_continue: continue,
+    on_continue: Some(continue),
     on_option_selected: None,
     on_option_removed: None,
     images: [
@@ -68,36 +103,46 @@ pub fn answer_screen(
 fn level_screen(
   game game: Game,
   continue_text continue_text: String,
-  on_continue continue: message,
+  on_continue continue: Option(message),
   on_option_selected select_option: Option(fn(game.Item) -> message),
   on_option_removed remove_word: Option(fn(game.Item) -> message),
   images images: List(String),
 ) -> Element(message) {
   let level = game.level
-  html.div([attribute.class("game-background")], [
-    html.main([attribute.class("game")], [
-      html.div([attribute.class("status")], [
-        html.div([attribute.class("hearts")], [
-          html.img([attribute.src("https://gleam.run/images/lucy/lucy.svg")]),
-          html.img([attribute.src("https://gleam.run/images/lucy/lucy.svg")]),
-          html.img([attribute.src("https://gleam.run/images/lucy/lucy.svg")]),
-        ]),
-        html.div([attribute.class("diamonds")], [
-          element.text("0"),
-          html.img([attribute.src("https://gleam.run/images/lucy/lucy.svg")]),
-        ]),
+  card([attribute.class("game")], [
+    html.div([attribute.class("status")], [
+      html.div([attribute.class("hearts")], [
+        html.img([attribute.src("https://gleam.run/images/lucy/lucy.svg")]),
+        html.img([attribute.src("https://gleam.run/images/lucy/lucy.svg")]),
+        html.img([attribute.src("https://gleam.run/images/lucy/lucy.svg")]),
       ]),
-      html.div(
-        [attribute.class("images")],
-        list.map(images, fn(image) { html.img([attribute.src(image)]) }),
-      ),
-      html.p(
-        [attribute.class("sentence")],
-        list.map(game.level_sentence(game), sentence_chunk_view(_, remove_word)),
-      ),
-      html.ul([], list.map(level.options, possible_word_view(_, select_option))),
-      button(continue, [], [element.text(continue_text)]),
+      html.div([attribute.class("diamonds")], [
+        element.text("0"),
+        html.img([attribute.src("https://gleam.run/images/lucy/lucy.svg")]),
+      ]),
     ]),
+    html.div(
+      [attribute.class("images")],
+      list.map(images, fn(image) { html.img([attribute.src(image)]) }),
+    ),
+    html.p(
+      [attribute.class("sentence")],
+      list.map(game.level_sentence(game), sentence_chunk_view(_, remove_word)),
+    ),
+    html.ul([], list.map(level.options, possible_word_view(_, select_option))),
+    case continue {
+      Some(continue) -> button(continue, [], [element.text(continue_text)])
+      None -> disabled_button([], [element.text(continue_text)])
+    },
+  ])
+}
+
+fn card(
+  attributes: List(Attribute(a)),
+  children: List(Element(a)),
+) -> Element(a) {
+  html.div([attribute.class("card-background")], [
+    html.main([attribute.class("card"), ..attributes], children),
   ])
 }
 
