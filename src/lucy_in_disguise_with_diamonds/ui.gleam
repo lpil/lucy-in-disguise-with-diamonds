@@ -32,39 +32,35 @@ pub fn intro_screen(continue: message) -> Element(message) {
 pub fn challenge_screen(
   game game: Game,
   on_continue continue: message,
-  on_word_selected select_word: fn(String) -> message,
-  on_word_removed remove_word: fn(String) -> message,
+  on_option_selected select: fn(game.Item) -> message,
+  on_option_removed remove: fn(game.Item) -> message,
 ) -> Element(message) {
   level_screen(
     game,
     continue_text: "Check answer",
     on_continue: continue,
-    on_word_selected: Some(select_word),
-    on_word_removed: Some(remove_word),
+    on_option_selected: Some(select),
+    on_option_removed: Some(remove),
     images: [
       "https://gleam.run/images/lucy/lucy.svg",
-      "item-" <> game.level.disguise_image <> ".svg",
+      game.item_image_url(game.level.item),
     ],
   )
 }
 
 pub fn answer_screen(
   game game: Game,
+  selected selected: game.Item,
   on_continue continue: message,
 ) -> Element(message) {
-  let success = game.answer_is_correct(game.level)
-  let prefix = case success {
-    True -> "success"
-    False -> "fail"
-  }
   level_screen(
     game,
     continue_text: "Next level",
     on_continue: continue,
-    on_word_selected: None,
-    on_word_removed: None,
+    on_option_selected: None,
+    on_option_removed: None,
     images: [
-      prefix <> "-" <> game.level.disguise_image <> ".svg",
+      game.item_fail_image_url(selected),
     ],
   )
 }
@@ -73,8 +69,8 @@ fn level_screen(
   game game: Game,
   continue_text continue_text: String,
   on_continue continue: message,
-  on_word_selected select_word: Option(fn(String) -> message),
-  on_word_removed remove_word: Option(fn(String) -> message),
+  on_option_selected select_option: Option(fn(game.Item) -> message),
+  on_option_removed remove_word: Option(fn(game.Item) -> message),
   images images: List(String),
 ) -> Element(message) {
   let level = game.level
@@ -97,31 +93,30 @@ fn level_screen(
       ),
       html.p(
         [attribute.class("sentence")],
-        list.map(level.sentence, sentence_chunk_view(_, remove_word)),
+        list.map(game.level_sentence(game), sentence_chunk_view(_, remove_word)),
       ),
-      html.ul([], list.map(level.words, possible_word_view(_, select_word))),
+      html.ul([], list.map(level.options, possible_word_view(_, select_option))),
       button(continue, [], [element.text(continue_text)]),
     ]),
   ])
 }
 
 fn sentence_chunk_view(
-  chunk: game.Chunk,
-  remove_word: Option(fn(String) -> message),
+  chunk: game.SentenceChunk,
+  remove: Option(fn(game.Item) -> message),
 ) -> Element(message) {
   case chunk {
-    game.FixedChunk(text:) ->
+    game.Fixed(text:) ->
       html.span([attribute.class("fixed-chunk")], [element.text(text)])
 
-    game.InputChunk(selection: None, ..) ->
-      html.span([attribute.class("word-placeholder")], [])
+    game.Input -> html.span([attribute.class("word-placeholder")], [])
 
-    game.InputChunk(selection: Some(word), ..) -> {
+    game.Selected(item) -> {
       let attrs = [attribute.class("word-selected")]
-      let text = html.text(word)
-      case remove_word {
+      let text = html.text(game.item_to_gaeilge(item))
+      case remove {
         None -> disabled_button(attrs, [text])
-        Some(remove_word) -> button(remove_word(word), attrs, [text])
+        Some(remove) -> button(remove(item), attrs, [text])
       }
     }
   }
@@ -149,12 +144,13 @@ fn button(
 }
 
 fn possible_word_view(
-  word: String,
-  select_word: Option(fn(String) -> message),
+  option: game.Item,
+  select_option: Option(fn(game.Item) -> message),
 ) -> Element(message) {
-  let button = case select_word {
+  let word = game.item_to_gaeilge(option)
+  let button = case select_option {
     None -> disabled_button([], [html.text(word)])
-    Some(select_word) -> button(select_word(word), [], [html.text(word)])
+    Some(select_option) -> button(select_option(option), [], [html.text(word)])
   }
   html.li([], [button])
 }

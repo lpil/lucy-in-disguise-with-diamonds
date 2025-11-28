@@ -1,3 +1,4 @@
+import gleam/option
 import lucy_in_disguise_with_diamonds/game.{type Game, Game}
 import lucy_in_disguise_with_diamonds/ui
 import lustre
@@ -9,15 +10,15 @@ pub type State {
   MadeWithGleamScreen
   IntroScreen
   ChallengeScreen(game: Game)
-  AnswerScreen(game: Game)
+  AnswerScreen(game: Game, selected: game.Item)
   VictoryScreen
   CreditsScreen
 }
 
 pub type Message {
   ContinuePressed
-  WordSelected(word: String)
-  WordRemoved(word: String)
+  WordSelected(game.Item)
+  WordRemoved(game.Item)
 }
 
 pub fn main() -> Nil {
@@ -37,19 +38,24 @@ fn update(state: State, message: Message) -> #(State, Effect(Message)) {
     CreditsScreen -> pure(state)
 
     ChallengeScreen(game:) -> update_challenge_screen(game, message)
-    AnswerScreen(game:) -> update_answer_screen(game, message)
+    AnswerScreen(game:, selected:) ->
+      update_answer_screen(game, selected, message)
   }
 }
 
-fn update_answer_screen(game: Game, message: Message) -> #(State, Effect(a)) {
+fn update_answer_screen(
+  game: Game,
+  selected: game.Item,
+  message: Message,
+) -> #(State, Effect(a)) {
   case message {
-    WordRemoved(..) | WordSelected(..) -> pure(AnswerScreen(game))
+    WordRemoved(..) | WordSelected(..) -> pure(AnswerScreen(game, selected))
 
     ContinuePressed ->
       case game.next_levels {
         [] -> pure(VictoryScreen)
         [level, ..next_levels] -> {
-          let game = Game(level:, next_levels:)
+          let game = Game(level:, next_levels:, selected: option.None)
           pure(ChallengeScreen(game))
         }
       }
@@ -61,15 +67,19 @@ fn update_challenge_screen(
   message: Message,
 ) -> #(State, Effect(Message)) {
   case message {
-    ContinuePressed -> pure(AnswerScreen(game))
+    ContinuePressed ->
+      case game.selected {
+        option.Some(selected) -> pure(AnswerScreen(game, selected))
+        option.None -> pure(ChallengeScreen(game))
+      }
 
-    WordSelected(word:) -> {
-      let game = Game(..game, level: game.select_word(game.level, word))
+    WordSelected(option) -> {
+      let game = game.select_option(game, option)
       pure(ChallengeScreen(game))
     }
 
-    WordRemoved(word:) -> {
-      let game = Game(..game, level: game.remove_word(game.level, word))
+    WordRemoved(option) -> {
+      let game = game.deselect_option(game, option)
       pure(ChallengeScreen(game))
     }
   }
@@ -88,10 +98,11 @@ fn view(state: State) -> Element(Message) {
       ui.challenge_screen(
         game:,
         on_continue: ContinuePressed,
-        on_word_selected: WordSelected,
-        on_word_removed: WordRemoved,
+        on_option_selected: WordSelected,
+        on_option_removed: WordRemoved,
       )
-    AnswerScreen(game:) -> ui.answer_screen(game:, on_continue: ContinuePressed)
+    AnswerScreen(game:, selected:) ->
+      ui.answer_screen(game:, selected:, on_continue: ContinuePressed)
 
     VictoryScreen -> ui.victory_screen(ContinuePressed)
     CreditsScreen -> ui.credits_screen()
