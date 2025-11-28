@@ -44,7 +44,7 @@ fn ramp_up(player: glor.AudioPlayer, to target: Float) -> Nil {
   case volume >. target {
     True -> Nil
     False -> {
-      use <- time.wait(50)
+      use <- time.wait(40)
       glor.set_volume(player, next_volume)
       ramp_up(player, to: target)
     }

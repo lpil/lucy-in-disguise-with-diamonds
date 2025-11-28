@@ -246,8 +246,11 @@ fn possible_word_view(
 }
 
 pub fn victory_screen(continue: message) -> Element(message) {
-  html.div([event.on_click(continue)], [
-    html.h1([], [element.text("Victory screen")]),
+  html.div([attribute.class("victory")], [
+    html.img([
+      attribute.class("background"),
+      attribute.src("victory.svg"),
+    ]),
   ])
 }
 
