@@ -83,7 +83,11 @@ body {
 
 .game .hearts {
   display: flex;
-  height: 40px;
+  height: 30px;
+}
+
+.game .hearts img {
+  margin: 0 2px;
 }
 
 .game .diamonds {

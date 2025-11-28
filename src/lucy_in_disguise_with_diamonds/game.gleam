@@ -1,4 +1,6 @@
+import gleam/list
 import gleam/option.{type Option, None, Some}
+import gleam/set
 
 pub type Game {
   Game(level: Level, next_levels: List(Level), selected: Option(Item))
@@ -86,7 +88,7 @@ pub type SentenceChunk {
   Selected(Item)
 }
 
-pub fn level_sentence(game: Game) -> List(SentenceChunk) {
+pub fn challenge_sentence(game: Game) -> List(SentenceChunk) {
   [
     Fixed("Tá "),
     case game.selected {
@@ -95,6 +97,23 @@ pub fn level_sentence(game: Game) -> List(SentenceChunk) {
     },
     Fixed("ar Lucy."),
   ]
+}
+
+pub fn answer_sentence(level: Level, selected: Item) -> List(SentenceChunk) {
+  case selected == level.item {
+    True -> [
+      Fixed("Tá "),
+      Selected(selected),
+      Fixed("ar Lucy."),
+    ]
+    False -> [
+      Fixed("Tá "),
+      Selected(level.item),
+      Fixed(" uirthi, ni "),
+      Selected(selected),
+      Fixed("!"),
+    ]
+  }
 }
 
 pub fn item_image_url(item: Item) -> String {
@@ -107,4 +126,18 @@ pub fn item_fail_image_url(item: Item) -> String {
 
 pub fn item_success_image_url(item: Item) -> String {
   "/success-" <> item_to_bearla(item) <> ".svg"
+}
+
+pub fn all_images() -> List(String) {
+  [first_level, ..levels]
+  |> list.flat_map(fn(level) { level.options })
+  |> list.fold(set.new(), fn(items, item) { set.insert(items, item) })
+  |> set.to_list
+  |> list.flat_map(fn(item) {
+    [
+      item_image_url(item),
+      item_fail_image_url(item),
+      item_success_image_url(item),
+    ]
+  })
 }

@@ -24,7 +24,21 @@ pub fn title_screen(continue: message) -> Element(message) {
     ]),
     button(continue, [], [element.text("Play")]),
     html.p([], [element.text("Psst. This game has audio!")]),
+
+    image_preloaders(),
   ])
+}
+
+fn image_preloaders() -> Element(message) {
+  game.all_images()
+  |> list.map(fn(url) {
+    html.link([
+      attribute.rel("preload"),
+      attribute.as_("image"),
+      attribute.href(url),
+    ])
+  })
+  |> element.fragment
 }
 
 pub fn intro_screen(continue: message) -> Element(message) {
@@ -73,6 +87,7 @@ pub fn challenge_screen(
   }
   level_screen(
     game,
+    sentence: game.challenge_sentence(game),
     continue_text: "Check answer",
     on_continue: continue,
     on_option_selected: select,
@@ -95,6 +110,7 @@ pub fn answer_screen(
   }
   level_screen(
     game,
+    sentence: game.answer_sentence(game.level, selected),
     continue_text: "Next level",
     on_continue: Some(continue),
     on_option_selected: None,
@@ -107,6 +123,7 @@ pub fn answer_screen(
 
 fn level_screen(
   game game: Game,
+  sentence sentence: List(game.SentenceChunk),
   continue_text continue_text: String,
   on_continue continue: Option(message),
   on_option_selected select_option: Option(fn(game.Item) -> message),
@@ -117,13 +134,13 @@ fn level_screen(
   card([attribute.class("game")], [
     html.div([attribute.class("status")], [
       html.div([attribute.class("hearts")], [
-        html.img([attribute.src("https://gleam.run/images/lucy/lucy.svg")]),
-        html.img([attribute.src("https://gleam.run/images/lucy/lucy.svg")]),
-        html.img([attribute.src("https://gleam.run/images/lucy/lucy.svg")]),
+        html.img([attribute.src("heart-full.svg")]),
+        html.img([attribute.src("heart-full.svg")]),
+        html.img([attribute.src("heart-full.svg")]),
       ]),
       html.div([attribute.class("diamonds")], [
         element.text("0"),
-        html.img([attribute.src("https://gleam.run/images/lucy/lucy.svg")]),
+        html.img([attribute.src("diamond.svg")]),
       ]),
     ]),
     html.div(
@@ -132,7 +149,7 @@ fn level_screen(
     ),
     html.p(
       [attribute.class("sentence")],
-      list.map(game.level_sentence(game), sentence_chunk_view(_, remove_word)),
+      list.map(sentence, sentence_chunk_view(_, remove_word)),
     ),
     html.ul([], list.map(level.options, possible_word_view(_, select_option))),
     case continue {
