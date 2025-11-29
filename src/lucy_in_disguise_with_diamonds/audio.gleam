@@ -38,6 +38,15 @@ pub fn play_music() -> effect.Effect(msg) {
   ramp_up(player, to: 0.3)
 }
 
+pub fn play_logo_jingle() -> effect.Effect(msg) {
+  use _dispatch <- effect.from
+  use <- time.wait(100)
+  let track = "gleam-ah.mp3"
+  let player = glor.new(track)
+  glor.set_volume(player, 0.4)
+  glor.play(player)
+}
+
 fn ramp_up(player: glor.AudioPlayer, to target: Float) -> Nil {
   let volume = glor.volume(player)
   let next_volume = float.max(volume *. 1.1, 0.01)

@@ -43,7 +43,8 @@ fn update(state: State, message: Message) -> #(State, Effect(Message)) {
     TitleScreen -> {
       let effects =
         effect.batch([
-          time.later(2000, ContinuePressed),
+          audio.play_logo_jingle(),
+          time.later(2500, ContinuePressed),
         ])
       #(GleamLogoScreen, effects)
     }
@@ -160,4 +161,5 @@ fn view(state: State) -> Element(Message) {
 
 fn init(_: anything) -> #(State, Effect(Message)) {
   #(TitleScreen, effect.none())
+  // #(VictoryScreen, effect.none())
 }
