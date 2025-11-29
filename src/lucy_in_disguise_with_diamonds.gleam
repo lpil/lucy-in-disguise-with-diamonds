@@ -44,7 +44,7 @@ fn update(state: State, message: Message) -> #(State, Effect(Message)) {
       let effects =
         effect.batch([
           audio.play_logo_jingle(),
-          time.later(2500, ContinuePressed),
+          time.later(3500, ContinuePressed),
         ])
       #(GleamLogoScreen, effects)
     }

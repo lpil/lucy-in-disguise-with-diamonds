@@ -40,7 +40,7 @@ pub fn play_music() -> effect.Effect(msg) {
 
 pub fn play_logo_jingle() -> effect.Effect(msg) {
   use _dispatch <- effect.from
-  use <- time.wait(100)
+  use <- time.wait(200)
   let track = "gleam-ah.mp3"
   let player = glor.new(track)
   glor.set_volume(player, 0.4)

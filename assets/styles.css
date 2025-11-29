@@ -322,7 +322,7 @@ ul {
   max-width: 90vw;
   animation:
     logo-fade-in 0.8s ease-in-out 0s,
-    logo-fade-out 0.4s ease-in-out 1.9s forwards;
+    logo-fade-out 0.4s ease-in-out 2.9s forwards;
 }
 
 @keyframes logo-fade-in {
