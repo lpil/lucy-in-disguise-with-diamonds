@@ -245,7 +245,7 @@ fn possible_word_view(
   html.li([], [button])
 }
 
-pub fn victory_screen(continue: message) -> Element(message) {
+pub fn victory_screen() -> Element(message) {
   html.div([attribute.class("victory")], [
     html.img([
       attribute.class("background"),
@@ -277,6 +277,7 @@ pub fn credits_screen() -> Element(message) {
         #("Gleam language", ["The Gleam core team", "The Gleam contributors"]),
         #("Outfit font", ["Smartsheet Inc", "Rodrigo Fuenzalida"]),
         #("Voice acting", ["Kara via Fourthwoods on Freesound"]),
+        #("Music", ["Seth Makes Noise on Freesound"]),
       ]),
 
       html.p([attribute.class("disclaimer")], [

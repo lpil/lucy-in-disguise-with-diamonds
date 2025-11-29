@@ -153,7 +153,7 @@ fn view(state: State) -> Element(Message) {
     AnswerScreen(game:, selected:) ->
       ui.answer_screen(game:, selected:, on_continue: ContinuePressed)
 
-    VictoryScreen -> ui.victory_screen(ContinuePressed)
+    VictoryScreen -> ui.victory_screen()
     CreditsScreen -> ui.credits_screen()
   }
 }
